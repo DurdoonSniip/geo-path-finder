@@ -5,6 +5,7 @@ export interface Company {
   latitude: number;
   longitude: number;
   distanceFromPrevious?: number;
+  durationFromPrevious?: number;
 }
 
 export interface GeocodingResult {

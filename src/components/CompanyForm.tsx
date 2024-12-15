@@ -45,7 +45,7 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
       }
 
       if (companiesWithCoordinates.length === companies.length) {
-        const sortedCompanies = calculateDistances(companiesWithCoordinates);
+        const sortedCompanies = await calculateDistances(companiesWithCoordinates);
         saveCompanies(sortedCompanies);
         onSubmit(sortedCompanies);
         toast({

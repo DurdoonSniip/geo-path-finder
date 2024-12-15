@@ -1,7 +1,7 @@
 import { Company } from "@/types/company";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Clock } from "lucide-react";
 
 interface CompanyCardProps {
   company: Company;
@@ -11,6 +11,15 @@ interface CompanyCardProps {
 const CompanyCard = ({ company, isFirst }: CompanyCardProps) => {
   const getWazeUrl = (lat: number, lon: number) => {
     return `https://www.waze.com/ul?ll=${lat}%2C${lon}&navigate=yes`;
+  };
+
+  const formatDuration = (minutes: number) => {
+    if (minutes < 60) {
+      return `${Math.round(minutes)} min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = Math.round(minutes % 60);
+    return `${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}min` : ''}`;
   };
 
   return (
@@ -25,6 +34,13 @@ const CompanyCard = ({ company, isFirst }: CompanyCardProps) => {
               <p className="text-sm text-gray-500 mt-2">
                 Distance {isFirst ? "du point de départ" : "de l'entreprise précédente"} :{" "}
                 {company.distanceFromPrevious.toFixed(2)} km
+              </p>
+            )}
+
+            {company.durationFromPrevious !== undefined && company.durationFromPrevious > 0 && (
+              <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                <Clock size={14} />
+                Durée en voiture : {formatDuration(company.durationFromPrevious)}
               </p>
             )}
           </div>

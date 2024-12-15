@@ -30,7 +30,28 @@ const toRad = (value: number): number => {
   return (value * Math.PI) / 180;
 };
 
-export const calculateDistances = (companies: Company[]): Company[] => {
+const getDrivingDuration = async (
+  fromLat: number,
+  fromLon: number,
+  toLat: number,
+  toLon: number
+): Promise<number> => {
+  try {
+    const response = await fetch(
+      `https://router.project-osrm.org/route/v1/driving/${fromLon},${fromLat};${toLon},${toLat}?overview=false`
+    );
+    const data = await response.json();
+    if (data.routes && data.routes[0]) {
+      return data.routes[0].duration / 60; // Conversion en minutes
+    }
+    return 0;
+  } catch (error) {
+    console.error("Error fetching duration:", error);
+    return 0;
+  }
+};
+
+export const calculateDistances = async (companies: Company[]): Promise<Company[]> => {
   const result: Company[] = [];
   const remaining = [...companies];
 
@@ -56,9 +77,17 @@ export const calculateDistances = (companies: Company[]): Company[] => {
     });
 
     const closestCompany = remaining[closestIndex];
+    const duration = await getDrivingDuration(
+      currentPoint.latitude,
+      currentPoint.longitude,
+      closestCompany.latitude,
+      closestCompany.longitude
+    );
+
     result.push({
       ...closestCompany,
       distanceFromPrevious: minDistance,
+      durationFromPrevious: duration,
     });
 
     remaining.splice(closestIndex, 1);
