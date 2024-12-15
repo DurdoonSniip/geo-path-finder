@@ -1,12 +1,14 @@
-import { Company } from "@/types/company";
+const STORAGE_KEY = 'companies';
 
-const STORAGE_KEY = "companies";
-
-export const saveCompanies = (companies: Company[]) => {
+export const saveCompanies = (companies: any[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(companies));
 };
 
-export const loadCompanies = (): Company[] => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+export const loadCompanies = () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return saved ? JSON.parse(saved) : [];
+};
+
+export const clearCompanies = () => {
+  localStorage.removeItem(STORAGE_KEY);
 };
