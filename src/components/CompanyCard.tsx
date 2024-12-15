@@ -40,7 +40,7 @@ const CompanyCard = ({ company, isFirst }: CompanyCardProps) => {
             {company.durationFromPrevious !== undefined && company.durationFromPrevious > 0 && (
               <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                 <Clock size={14} />
-                Durée en voiture : {formatDuration(company.durationFromPrevious)}
+                Durée en voiture depuis {isFirst ? "le point de départ" : "l'entreprise précédente"} : {formatDuration(company.durationFromPrevious)}
               </p>
             )}
           </div>
