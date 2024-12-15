@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NumberInput from "@/components/NumberInput";
 import CompanyForm from "@/components/CompanyForm";
 import CompanyList from "@/components/CompanyList";
 import { Company } from "@/types/company";
+import { loadCompanies } from "@/utils/storage";
 
 const Index = () => {
   const [numberOfCompanies, setNumberOfCompanies] = useState<number>(0);
   const [companies, setCompanies] = useState<Company[]>([]);
+
+  useEffect(() => {
+    const savedCompanies = loadCompanies();
+    if (savedCompanies.length > 0) {
+      setCompanies(savedCompanies);
+    }
+  }, []);
 
   const handleCompaniesSubmit = (sortedCompanies: Company[]) => {
     setCompanies(sortedCompanies);
