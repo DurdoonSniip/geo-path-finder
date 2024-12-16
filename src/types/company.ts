@@ -7,7 +7,7 @@ export interface Company {
   distanceFromPrevious?: number;
   durationFromPrevious?: number;
   completed?: boolean;
-  scheduledTime?: string; // format "HH:mm"
+  scheduledTime: string; // format "HH:mm"
 }
 
 export interface GeocodingResult {

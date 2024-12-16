@@ -17,10 +17,12 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
   const [companies, setCompanies] = useState<Array<{ 
     name: string; 
     city: string;
+    scheduledTime: string;
   }>>(
     Array(numberOfCompanies).fill({ 
       name: "", 
-      city: ""
+      city: "",
+      scheduledTime: "09:00"
     })
   );
   const [loading, setLoading] = useState(false);
@@ -28,7 +30,7 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
 
   const handleInputChange = (
     index: number, 
-    field: "name" | "city", 
+    field: "name" | "city" | "scheduledTime", 
     value: string
   ) => {
     const newCompanies = [...companies];
@@ -96,6 +98,17 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
               id={`company-city-${index}`}
               value={company.city}
               onChange={(e) => handleInputChange(index, "city", e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`scheduled-time-${index}`}>Heure de passage prévue</Label>
+            <Input
+              id={`scheduled-time-${index}`}
+              type="time"
+              value={company.scheduledTime}
+              onChange={(e) => handleInputChange(index, "scheduledTime", e.target.value)}
               required
             />
           </div>
