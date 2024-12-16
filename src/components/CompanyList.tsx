@@ -1,7 +1,7 @@
 import { Company } from "@/types/company";
 import CompanyCard from "./CompanyCard";
 import { Button } from "@/components/ui/button";
-import { Trash2, FilePdf } from "lucide-react";
+import { Trash2, FileText } from "lucide-react";
 import { clearCompanies, saveCompanies, updateCompanyCompletion } from "@/utils/storage";
 import { useToast } from "@/components/ui/use-toast";
 import jsPDF from "jspdf";
@@ -72,7 +72,7 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
             onClick={generatePDF}
             className="gap-2"
           >
-            <FilePdf className="w-4 h-4" />
+            <FileText className="w-4 h-4" />
             Générer un PDF
           </Button>
           <Button 
