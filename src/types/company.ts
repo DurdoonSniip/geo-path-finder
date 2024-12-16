@@ -7,6 +7,12 @@ export interface Company {
   distanceFromPrevious?: number;
   durationFromPrevious?: number;
   completed?: boolean;
+  openingHours: {
+    start: string; // format "HH:mm"
+    end: string; // format "HH:mm"
+  };
+  isOpen?: boolean;
+  scheduledTime?: string; // format "HH:mm"
 }
 
 export interface GeocodingResult {

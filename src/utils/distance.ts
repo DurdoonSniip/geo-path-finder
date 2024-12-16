@@ -51,50 +51,113 @@ const getDrivingDuration = async (
   }
 };
 
+const isCompanyOpen = (company: Company, time: string): boolean => {
+  const [hours, minutes] = time.split(':').map(Number);
+  const [startHours, startMinutes] = company.openingHours.start.split(':').map(Number);
+  const [endHours, endMinutes] = company.openingHours.end.split(':').map(Number);
+
+  const currentMinutes = hours * 60 + minutes;
+  const startMinutes = startHours * 60 + startMinutes;
+  const endMinutes = endHours * 60 + endMinutes;
+
+  return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+};
+
+const calculateArrivalTime = (startTime: string, durationInMinutes: number): string => {
+  const [hours, minutes] = startTime.split(':').map(Number);
+  const totalMinutes = hours * 60 + minutes + durationInMinutes;
+  const newHours = Math.floor(totalMinutes / 60) % 24;
+  const newMinutes = Math.floor(totalMinutes % 60);
+  return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+};
+
 export const calculateDistances = async (companies: Company[]): Promise<Company[]> => {
+  const startTime = "09:00"; // Heure de départ
+  let currentTime = startTime;
   const result: Company[] = [];
   const remaining = [...companies];
-
-  // Trouver l'entreprise la plus proche du point de référence
+  
+  // Point de départ
   let currentPoint = REFERENCE_POINT;
   
   while (remaining.length > 0) {
-    let minDistance = Infinity;
-    let closestIndex = -1;
-
-    remaining.forEach((company, index) => {
+    let bestCompanyIndex = -1;
+    let bestScore = Infinity;
+    
+    // Évaluer chaque entreprise restante
+    for (let i = 0; i < remaining.length; i++) {
+      const company = remaining[i];
       const distance = calculateDistance(
         currentPoint.latitude,
         currentPoint.longitude,
         company.latitude,
         company.longitude
       );
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestIndex = index;
+      
+      // Calculer l'heure d'arrivée estimée
+      const duration = await getDrivingDuration(
+        currentPoint.latitude,
+        currentPoint.longitude,
+        company.latitude,
+        company.longitude
+      );
+      const arrivalTime = calculateArrivalTime(currentTime, duration);
+      
+      // Vérifier si l'entreprise sera ouverte à l'heure d'arrivée
+      if (isCompanyOpen(company, arrivalTime)) {
+        // Score basé sur la distance (plus c'est proche, meilleur c'est)
+        const score = distance;
+        if (score < bestScore) {
+          bestScore = score;
+          bestCompanyIndex = i;
+        }
       }
-    });
-
-    const closestCompany = remaining[closestIndex];
+    }
+    
+    // Si aucune entreprise n'est disponible, prendre la plus proche
+    if (bestCompanyIndex === -1) {
+      let minDistance = Infinity;
+      for (let i = 0; i < remaining.length; i++) {
+        const distance = calculateDistance(
+          currentPoint.latitude,
+          currentPoint.longitude,
+          remaining[i].latitude,
+          remaining[i].longitude
+        );
+        if (distance < minDistance) {
+          minDistance = distance;
+          bestCompanyIndex = i;
+        }
+      }
+    }
+    
+    const bestCompany = remaining[bestCompanyIndex];
     const duration = await getDrivingDuration(
       currentPoint.latitude,
       currentPoint.longitude,
-      closestCompany.latitude,
-      closestCompany.longitude
+      bestCompany.latitude,
+      bestCompany.longitude
     );
-
+    
+    const arrivalTime = calculateArrivalTime(currentTime, duration);
+    const isOpen = isCompanyOpen(bestCompany, arrivalTime);
+    
     result.push({
-      ...closestCompany,
-      distanceFromPrevious: minDistance,
+      ...bestCompany,
+      distanceFromPrevious: bestScore,
       durationFromPrevious: duration,
+      isOpen,
+      scheduledTime: arrivalTime
     });
-
-    remaining.splice(closestIndex, 1);
+    
+    // Mettre à jour le point actuel et l'heure
     currentPoint = {
-      latitude: closestCompany.latitude,
-      longitude: closestCompany.longitude,
+      latitude: bestCompany.latitude,
+      longitude: bestCompany.longitude
     };
+    currentTime = calculateArrivalTime(arrivalTime, 30); // Ajouter 30 minutes pour chaque visite
+    
+    remaining.splice(bestCompanyIndex, 1);
   }
 
   return result;

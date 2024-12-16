@@ -14,15 +14,37 @@ interface CompanyFormProps {
 }
 
 const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
-  const [companies, setCompanies] = useState<Array<{ name: string; city: string }>>(
-    Array(numberOfCompanies).fill({ name: "", city: "" })
+  const [companies, setCompanies] = useState<Array<{ 
+    name: string; 
+    city: string;
+    openingHours: { start: string; end: string; }
+  }>>(
+    Array(numberOfCompanies).fill({ 
+      name: "", 
+      city: "", 
+      openingHours: { start: "09:00", end: "17:00" }
+    })
   );
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleInputChange = (index: number, field: "name" | "city", value: string) => {
+  const handleInputChange = (
+    index: number, 
+    field: "name" | "city" | "openingStart" | "openingEnd", 
+    value: string
+  ) => {
     const newCompanies = [...companies];
-    newCompanies[index] = { ...newCompanies[index], [field]: value };
+    if (field === "openingStart" || field === "openingEnd") {
+      newCompanies[index] = {
+        ...newCompanies[index],
+        openingHours: {
+          ...newCompanies[index].openingHours,
+          [field === "openingStart" ? "start" : "end"]: value
+        }
+      };
+    } else {
+      newCompanies[index] = { ...newCompanies[index], [field]: value };
+    }
     setCompanies(newCompanies);
   };
 
@@ -40,6 +62,7 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
             id: Math.random().toString(36).substr(2, 9),
             ...company,
             ...coordinates,
+            isOpen: false, // sera mis à jour lors du tri
           });
         }
       }
@@ -88,6 +111,29 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
               onChange={(e) => handleInputChange(index, "city", e.target.value)}
               required
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor={`opening-start-${index}`}>Heure d'ouverture</Label>
+              <Input
+                id={`opening-start-${index}`}
+                type="time"
+                value={company.openingHours.start}
+                onChange={(e) => handleInputChange(index, "openingStart", e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`opening-end-${index}`}>Heure de fermeture</Label>
+              <Input
+                id={`opening-end-${index}`}
+                type="time"
+                value={company.openingHours.end}
+                onChange={(e) => handleInputChange(index, "openingEnd", e.target.value)}
+                required
+              />
+            </div>
           </div>
         </div>
       ))}
