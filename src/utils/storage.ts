@@ -12,3 +12,11 @@ export const loadCompanies = () => {
 export const clearCompanies = () => {
   localStorage.removeItem(STORAGE_KEY);
 };
+
+export const updateCompanyCompletion = (companies: any[], companyId: string, completed: boolean) => {
+  const updatedCompanies = companies.map(company => 
+    company.id === companyId ? { ...company, completed } : company
+  );
+  saveCompanies(updatedCompanies);
+  return updatedCompanies;
+};

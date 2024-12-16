@@ -1,14 +1,16 @@
 import { Company } from "@/types/company";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Clock } from "lucide-react";
+import { ExternalLink, Clock, CheckSquare } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface CompanyCardProps {
   company: Company;
   isFirst: boolean;
+  onCompletionToggle: (id: string, completed: boolean) => void;
 }
 
-const CompanyCard = ({ company, isFirst }: CompanyCardProps) => {
+const CompanyCard = ({ company, isFirst, onCompletionToggle }: CompanyCardProps) => {
   const getWazeUrl = (lat: number, lon: number) => {
     return `https://www.waze.com/ul?ll=${lat}%2C${lon}&navigate=yes`;
   };
@@ -23,12 +25,21 @@ const CompanyCard = ({ company, isFirst }: CompanyCardProps) => {
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card className={`hover:shadow-lg transition-shadow ${company.completed ? 'opacity-50' : ''}`}>
       <CardContent className="p-6">
         <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-semibold text-lg">{company.name}</h3>
-            <p className="text-gray-600">{company.city}</p>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={company.completed}
+                onCheckedChange={(checked) => onCompletionToggle(company.id, checked === true)}
+                className="mt-1"
+              />
+              <div>
+                <h3 className="font-semibold text-lg">{company.name}</h3>
+                <p className="text-gray-600">{company.city}</p>
+              </div>
+            </div>
             
             {company.distanceFromPrevious !== undefined && (
               <p className="text-sm text-gray-500 mt-2">

@@ -49,6 +49,7 @@ const Index = () => {
           <CompanyList 
             companies={companies}
             onClear={handleClear}
+            onUpdateCompanies={setCompanies}
           />
         )}
       </div>
