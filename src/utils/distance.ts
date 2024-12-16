@@ -53,14 +53,14 @@ const getDrivingDuration = async (
 
 const isCompanyOpen = (company: Company, time: string): boolean => {
   const [hours, minutes] = time.split(':').map(Number);
-  const [startHours, startMinutes] = company.openingHours.start.split(':').map(Number);
-  const [endHours, endMinutes] = company.openingHours.end.split(':').map(Number);
+  const [startHours, startMins] = company.openingHours.start.split(':').map(Number);
+  const [endHours, endMins] = company.openingHours.end.split(':').map(Number);
 
   const currentMinutes = hours * 60 + minutes;
-  const startMinutes = startHours * 60 + startMinutes;
-  const endMinutes = endHours * 60 + endMinutes;
+  const totalStartMinutes = startHours * 60 + startMins;
+  const totalEndMinutes = endHours * 60 + endMins;
 
-  return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+  return currentMinutes >= totalStartMinutes && currentMinutes <= totalEndMinutes;
 };
 
 const calculateArrivalTime = (startTime: string, durationInMinutes: number): string => {
