@@ -126,7 +126,7 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">
-          Liste des entreprises (triées par proximité)
+          Liste des entreprises
         </h2>
         <div className="flex gap-2">
           <Button 
