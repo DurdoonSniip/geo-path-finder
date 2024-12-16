@@ -51,18 +51,6 @@ const getDrivingDuration = async (
   }
 };
 
-const isCompanyOpen = (company: Company, time: string): boolean => {
-  const [hours, minutes] = time.split(':').map(Number);
-  const [startHours, startMins] = company.openingHours.start.split(':').map(Number);
-  const [endHours, endMins] = company.openingHours.end.split(':').map(Number);
-
-  const currentMinutes = hours * 60 + minutes;
-  const totalStartMinutes = startHours * 60 + startMins;
-  const totalEndMinutes = endHours * 60 + endMins;
-
-  return currentMinutes >= totalStartMinutes && currentMinutes <= totalEndMinutes;
-};
-
 const calculateArrivalTime = (startTime: string, durationInMinutes: number): string => {
   const [hours, minutes] = startTime.split(':').map(Number);
   const totalMinutes = hours * 60 + minutes + durationInMinutes;
@@ -94,40 +82,11 @@ export const calculateDistances = async (companies: Company[]): Promise<Company[
         company.longitude
       );
       
-      // Calculer l'heure d'arrivée estimée
-      const duration = await getDrivingDuration(
-        currentPoint.latitude,
-        currentPoint.longitude,
-        company.latitude,
-        company.longitude
-      );
-      const arrivalTime = calculateArrivalTime(currentTime, duration);
-      
-      // Vérifier si l'entreprise sera ouverte à l'heure d'arrivée
-      if (isCompanyOpen(company, arrivalTime)) {
-        // Score basé sur la distance (plus c'est proche, meilleur c'est)
-        const score = distance;
-        if (score < bestScore) {
-          bestScore = score;
-          bestCompanyIndex = i;
-        }
-      }
-    }
-    
-    // Si aucune entreprise n'est disponible, prendre la plus proche
-    if (bestCompanyIndex === -1) {
-      let minDistance = Infinity;
-      for (let i = 0; i < remaining.length; i++) {
-        const distance = calculateDistance(
-          currentPoint.latitude,
-          currentPoint.longitude,
-          remaining[i].latitude,
-          remaining[i].longitude
-        );
-        if (distance < minDistance) {
-          minDistance = distance;
-          bestCompanyIndex = i;
-        }
+      // Score basé sur la distance (plus c'est proche, meilleur c'est)
+      const score = distance;
+      if (score < bestScore) {
+        bestScore = score;
+        bestCompanyIndex = i;
       }
     }
     
@@ -140,13 +99,11 @@ export const calculateDistances = async (companies: Company[]): Promise<Company[
     );
     
     const arrivalTime = calculateArrivalTime(currentTime, duration);
-    const isOpen = isCompanyOpen(bestCompany, arrivalTime);
     
     result.push({
       ...bestCompany,
       distanceFromPrevious: bestScore,
       durationFromPrevious: duration,
-      isOpen,
       scheduledTime: arrivalTime
     });
     
