@@ -24,6 +24,11 @@ const CompanyCard = ({ company, isFirst, onCompletionToggle }: CompanyCardProps)
     return `${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}min` : ''}`;
   };
 
+  // Vérifier si les horaires d'ouverture sont définis
+  const hasOpeningHours = company.openingHours && 
+    typeof company.openingHours.start === 'string' && 
+    typeof company.openingHours.end === 'string';
+
   return (
     <Card className={`hover:shadow-lg transition-shadow ${company.completed ? 'opacity-50' : ''}`}>
       <CardContent className="p-6">
@@ -38,19 +43,21 @@ const CompanyCard = ({ company, isFirst, onCompletionToggle }: CompanyCardProps)
               <div>
                 <h3 className="font-semibold text-lg">{company.name}</h3>
                 <p className="text-gray-600">{company.city}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className={`text-sm font-medium ${company.isOpen ? 'text-green-600' : 'text-red-600'}`}>
-                    {company.isOpen ? 'Ouvert' : 'Fermé'}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    ({company.openingHours.start} - {company.openingHours.end})
-                  </span>
-                  {company.scheduledTime && (
-                    <span className="text-sm font-medium text-blue-600 ml-2">
-                      Passage prévu à {company.scheduledTime}
+                {hasOpeningHours && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`text-sm font-medium ${company.isOpen ? 'text-green-600' : 'text-red-600'}`}>
+                      {company.isOpen ? 'Ouvert' : 'Fermé'}
                     </span>
-                  )}
-                </div>
+                    <span className="text-sm text-gray-500">
+                      ({company.openingHours.start} - {company.openingHours.end})
+                    </span>
+                    {company.scheduledTime && (
+                      <span className="text-sm font-medium text-blue-600 ml-2">
+                        Passage prévu à {company.scheduledTime}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             
