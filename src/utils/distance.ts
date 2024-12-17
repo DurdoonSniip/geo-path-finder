@@ -51,70 +51,55 @@ const getDrivingDuration = async (
   }
 };
 
-const calculateArrivalTime = (startTime: string, durationInMinutes: number): string => {
-  const [hours, minutes] = startTime.split(':').map(Number);
-  const totalMinutes = hours * 60 + minutes + durationInMinutes;
-  const newHours = Math.floor(totalMinutes / 60) % 24;
-  const newMinutes = Math.floor(totalMinutes % 60);
-  return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+const compareScheduledTimes = (a: string, b: string): number => {
+  const [hoursA, minutesA] = a.split(':').map(Number);
+  const [hoursB, minutesB] = b.split(':').map(Number);
+  
+  if (hoursA !== hoursB) {
+    return hoursA - hoursB;
+  }
+  return minutesA - minutesB;
 };
 
 export const calculateDistances = async (companies: Company[]): Promise<Company[]> => {
-  const startTime = "09:00"; // Heure de départ
-  let currentTime = startTime;
-  const result: Company[] = [];
-  const remaining = [...companies];
+  console.log("Sorting companies by scheduled time:", companies);
   
-  // Point de départ
+  // Trier les entreprises par heure de passage
+  const sortedCompanies = [...companies].sort((a, b) => 
+    compareScheduledTimes(a.scheduledTime, b.scheduledTime)
+  );
+  
+  console.log("Companies sorted by scheduled time:", sortedCompanies);
+
+  const result: Company[] = [];
   let currentPoint = REFERENCE_POINT;
   
-  while (remaining.length > 0) {
-    let bestCompanyIndex = -1;
-    let bestScore = Infinity;
+  for (let i = 0; i < sortedCompanies.length; i++) {
+    const company = sortedCompanies[i];
+    const distance = calculateDistance(
+      currentPoint.latitude,
+      currentPoint.longitude,
+      company.latitude,
+      company.longitude
+    );
     
-    // Évaluer chaque entreprise restante
-    for (let i = 0; i < remaining.length; i++) {
-      const company = remaining[i];
-      const distance = calculateDistance(
-        currentPoint.latitude,
-        currentPoint.longitude,
-        company.latitude,
-        company.longitude
-      );
-      
-      // Score basé sur la distance (plus c'est proche, meilleur c'est)
-      const score = distance;
-      if (score < bestScore) {
-        bestScore = score;
-        bestCompanyIndex = i;
-      }
-    }
-    
-    const bestCompany = remaining[bestCompanyIndex];
     const duration = await getDrivingDuration(
       currentPoint.latitude,
       currentPoint.longitude,
-      bestCompany.latitude,
-      bestCompany.longitude
+      company.latitude,
+      company.longitude
     );
     
-    const arrivalTime = calculateArrivalTime(currentTime, duration);
-    
     result.push({
-      ...bestCompany,
-      distanceFromPrevious: bestScore,
-      durationFromPrevious: duration,
-      scheduledTime: arrivalTime
+      ...company,
+      distanceFromPrevious: distance,
+      durationFromPrevious: duration
     });
     
-    // Mettre à jour le point actuel et l'heure
     currentPoint = {
-      latitude: bestCompany.latitude,
-      longitude: bestCompany.longitude
+      latitude: company.latitude,
+      longitude: company.longitude
     };
-    currentTime = calculateArrivalTime(arrivalTime, 30); // Ajouter 30 minutes pour chaque visite
-    
-    remaining.splice(bestCompanyIndex, 1);
   }
 
   return result;
