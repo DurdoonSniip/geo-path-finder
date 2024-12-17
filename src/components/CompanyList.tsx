@@ -63,11 +63,13 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
         yOffset = 20;
       }
 
-      // Définir l'opacité en fonction de l'état completed
+      // Ajouter un fond gris pour les entreprises complétées
       if (company.completed) {
-        pdf.setTextColor(128, 128, 128); // Gris pour les entreprises complétées
+        pdf.setFillColor(240, 240, 240); // Couleur de fond gris clair
+        pdf.rect(margin - 2, yOffset - 5, 170, lineHeight * 6, 'F'); // Rectangle de fond
+        pdf.setTextColor(128, 128, 128); // Texte en gris
       } else {
-        pdf.setTextColor(0, 0, 0); // Noir pour les entreprises non complétées
+        pdf.setTextColor(0, 0, 0); // Texte en noir
       }
 
       // Nom de l'entreprise avec statut
