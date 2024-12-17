@@ -19,10 +19,6 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
   const handleClear = () => {
     clearCompanies();
     onClear();
-    toast({
-      title: "Liste effacée",
-      description: "La liste des entreprises a été effacée avec succès.",
-    });
   };
 
   const handleCompletionToggle = (companyId: string, completed: boolean) => {

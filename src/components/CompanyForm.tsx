@@ -60,10 +60,6 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
         const sortedCompanies = await calculateDistances(companiesWithCoordinates);
         saveCompanies(sortedCompanies);
         onSubmit(sortedCompanies);
-        toast({
-          title: "Succès !",
-          description: "Les entreprises ont été géocodées et triées avec succès.",
-        });
       }
     } catch (error) {
       toast({
