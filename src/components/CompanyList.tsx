@@ -63,15 +63,28 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
         yOffset = 20;
       }
 
-      // Nom de l'entreprise
+      // Définir l'opacité en fonction de l'état completed
+      if (company.completed) {
+        pdf.setTextColor(128, 128, 128); // Gris pour les entreprises complétées
+      } else {
+        pdf.setTextColor(0, 0, 0); // Noir pour les entreprises non complétées
+      }
+
+      // Nom de l'entreprise avec statut
       pdf.setFont("helvetica", "bold");
-      pdf.text(`${index + 1}. ${company.name}${company.completed ? ' (Terminé)' : ''}`, margin, yOffset);
+      pdf.text(`${index + 1}. ${company.name}${company.completed ? ' ✓' : ''}`, margin, yOffset);
       yOffset += lineHeight;
 
       // Ville
       pdf.setFont("helvetica", "normal");
       pdf.text(`Ville: ${company.city}`, margin + 5, yOffset);
       yOffset += lineHeight;
+
+      // Heure de passage prévue
+      if (company.scheduledTime) {
+        pdf.text(`Heure de passage prévue: ${company.scheduledTime}`, margin + 5, yOffset);
+        yOffset += lineHeight;
+      }
 
       // Distance et durée
       if (company.distanceFromPrevious !== undefined) {
@@ -93,10 +106,9 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
       }
 
       // Lien Waze
-      const wazeUrl = getWazeUrl(company.latitude, company.longitude);
       pdf.setTextColor(0, 0, 255);
       pdf.setFont("helvetica", "bold");
-      pdf.textWithLink("Ouvrir dans Waze", margin + 5, yOffset, { url: wazeUrl });
+      pdf.textWithLink("Ouvrir dans Waze", margin + 5, yOffset, { url: getWazeUrl(company.latitude, company.longitude) });
       pdf.setTextColor(0, 0, 0);
       pdf.setFont("helvetica", "normal");
 
