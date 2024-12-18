@@ -1,7 +1,7 @@
 import { Company } from "@/types/company";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Clock, Image } from "lucide-react";
+import { ExternalLink, Clock } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -31,10 +31,6 @@ const CompanyCard = ({ company, isFirst, onCompletionToggle }: CompanyCardProps)
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = Math.round(minutes % 60);
     return `${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}min` : ''}`;
-  };
-
-  const getStreetViewUrl = () => {
-    return `https://maps.googleapis.com/maps/api/streetview?size=800x400&location=${company.latitude},${company.longitude}&key=YOUR_GOOGLE_MAPS_API_KEY`;
   };
 
   return (
@@ -108,13 +104,9 @@ const CompanyCard = ({ company, isFirst, onCompletionToggle }: CompanyCardProps)
           </DialogHeader>
           <div className="relative w-full h-[400px] rounded-lg overflow-hidden">
             <img
-              src={`https://maps.googleapis.com/maps/api/streetview?size=800x400&location=${company.latitude},${company.longitude}&key=YOUR_GOOGLE_MAPS_API_KEY`}
+              src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
               alt={`Vue de ${company.name}`}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                // Si l'image ne charge pas, on affiche une image de secours
-                e.currentTarget.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop";
-              }}
             />
           </div>
         </DialogContent>
