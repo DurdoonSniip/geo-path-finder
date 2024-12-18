@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { geocodeAddress } from "@/utils/geocoding";
 import { calculateDistances } from "@/utils/distance";
 import { saveCompanies } from "@/utils/storage";
@@ -44,6 +44,7 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
 
     try {
       const companiesWithCoordinates: Company[] = [];
+      let hasError = false;
 
       for (const company of companies) {
         const coordinates = await geocodeAddress(company.name, company.city);
@@ -53,16 +54,29 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
             ...company,
             ...coordinates
           });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Erreur de géocodage",
+            description: `Impossible de trouver les coordonnées pour ${company.name} à ${company.city}. Vérifiez le nom de l'entreprise et la ville.`
+          });
+          hasError = true;
+          break;
         }
       }
 
-      if (companiesWithCoordinates.length === companies.length) {
+      if (!hasError && companiesWithCoordinates.length === companies.length) {
         const sortedCompanies = await calculateDistances(companiesWithCoordinates);
         saveCompanies(sortedCompanies);
         onSubmit(sortedCompanies);
       }
     } catch (error) {
       console.error('Erreur lors de la soumission:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors du traitement des données."
+      });
     } finally {
       setLoading(false);
     }
