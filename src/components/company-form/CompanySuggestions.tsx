@@ -25,7 +25,7 @@ interface CompanySuggestionsProps {
 
 export function CompanySuggestions({
   value,
-  suggestions,
+  suggestions = [], // Add default empty array
   open,
   onOpenChange,
   onValueChange,
@@ -52,7 +52,7 @@ export function CompanySuggestions({
           />
           <CommandEmpty>Aucune entreprise trouvée.</CommandEmpty>
           <CommandGroup>
-            {(suggestions || []).map((suggestion) => (
+            {suggestions.map((suggestion) => (
               <CommandItem
                 key={suggestion}
                 value={suggestion}

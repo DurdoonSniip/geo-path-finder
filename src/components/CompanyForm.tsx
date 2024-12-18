@@ -73,6 +73,7 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
   };
 
   const searchCompanies = (query: string) => {
+    if (!query) return [];
     return companiesDB.filter(company => 
       company.toLowerCase().startsWith(query.toLowerCase())
     );

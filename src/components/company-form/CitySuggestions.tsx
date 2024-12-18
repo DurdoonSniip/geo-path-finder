@@ -25,7 +25,7 @@ interface CitySuggestionsProps {
 
 export function CitySuggestions({
   value,
-  suggestions,
+  suggestions = [], // Add default empty array
   open,
   onOpenChange,
   onValueChange,
@@ -52,7 +52,7 @@ export function CitySuggestions({
           />
           <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
           <CommandGroup>
-            {(suggestions || []).map((suggestion) => (
+            {suggestions.map((suggestion) => (
               <CommandItem
                 key={suggestion}
                 value={suggestion}
