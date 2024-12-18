@@ -7,8 +7,6 @@ import { geocodeAddress } from "@/utils/geocoding";
 import { calculateDistances } from "@/utils/distance";
 import { saveCompanies } from "@/utils/storage";
 import { Company } from "@/types/company";
-import { CompanySuggestions } from "./company-form/CompanySuggestions";
-import { CitySuggestions } from "./company-form/CitySuggestions";
 
 interface CompanyFormProps {
   numberOfCompanies: number;
@@ -29,57 +27,8 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
   );
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const [openCompany, setOpenCompany] = useState<number | null>(null);
-  const [openCity, setOpenCity] = useState<number | null>(null);
-  const [suggestions, setSuggestions] = useState<{ companies: string[], cities: string[] }>({
-    companies: [],
-    cities: []
-  });
 
-  // Simuler une base de données d'entreprises (à remplacer par une vraie API)
-  const companiesDB = [
-    "Airbus",
-    "Air France",
-    "Alstom",
-    "BNP Paribas",
-    "Bouygues",
-    "Carrefour",
-    "Danone",
-    "EDF",
-    "Engie",
-    "L'Oréal",
-    "LVMH",
-    "Michelin",
-    "Orange",
-    "Renault",
-    "Saint-Gobain",
-    "Sanofi",
-    "Schneider Electric",
-    "Société Générale",
-    "Total",
-    "Veolia"
-  ];
-
-  const searchCities = async (query: string) => {
-    if (query.length < 2) return [];
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&country=france&city=${query}`);
-      const data = await response.json();
-      return data.map((item: any) => item.display_name.split(',')[0]);
-    } catch (error) {
-      console.error('Erreur lors de la recherche des villes:', error);
-      return [];
-    }
-  };
-
-  const searchCompanies = (query: string) => {
-    if (!query) return [];
-    return companiesDB.filter(company => 
-      company.toLowerCase().startsWith(query.toLowerCase())
-    );
-  };
-
-  const handleInputChange = async (
+  const handleInputChange = (
     index: number, 
     field: "name" | "city" | "scheduledTime", 
     value: string
@@ -87,14 +36,6 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
     const newCompanies = [...companies];
     newCompanies[index] = { ...newCompanies[index], [field]: value };
     setCompanies(newCompanies);
-
-    if (field === "name" && value.length >= 2) {
-      const companyResults = searchCompanies(value);
-      setSuggestions(prev => ({ ...prev, companies: companyResults }));
-    } else if (field === "city" && value.length >= 2) {
-      const cityResults = await searchCities(value);
-      setSuggestions(prev => ({ ...prev, cities: cityResults }));
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,31 +76,21 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
           
           <div className="space-y-2">
             <Label htmlFor={`company-name-${index}`}>Nom de l'entreprise</Label>
-            <CompanySuggestions
+            <Input
+              id={`company-name-${index}`}
               value={company.name}
-              suggestions={suggestions.companies}
-              open={openCompany === index}
-              onOpenChange={(open) => setOpenCompany(open ? index : null)}
-              onValueChange={(value) => handleInputChange(index, "name", value)}
-              onSelect={(value) => {
-                handleInputChange(index, "name", value);
-                setOpenCompany(null);
-              }}
+              onChange={(e) => handleInputChange(index, "name", e.target.value)}
+              required
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor={`company-city-${index}`}>Ville</Label>
-            <CitySuggestions
+            <Input
+              id={`company-city-${index}`}
               value={company.city}
-              suggestions={suggestions.cities}
-              open={openCity === index}
-              onOpenChange={(open) => setOpenCity(open ? index : null)}
-              onValueChange={(value) => handleInputChange(index, "city", value)}
-              onSelect={(value) => {
-                handleInputChange(index, "city", value);
-                setOpenCity(null);
-              }}
+              onChange={(e) => handleInputChange(index, "city", e.target.value)}
+              required
             />
           </div>
 
