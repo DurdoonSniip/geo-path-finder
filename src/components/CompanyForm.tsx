@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,20 +7,8 @@ import { geocodeAddress } from "@/utils/geocoding";
 import { calculateDistances } from "@/utils/distance";
 import { saveCompanies } from "@/utils/storage";
 import { Company } from "@/types/company";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Check } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { CompanySuggestions } from "./company-form/CompanySuggestions";
+import { CitySuggestions } from "./company-form/CitySuggestions";
 
 interface CompanyFormProps {
   numberOfCompanies: number;
@@ -146,94 +134,32 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
           
           <div className="space-y-2">
             <Label htmlFor={`company-name-${index}`}>Nom de l'entreprise</Label>
-            <Popover open={openCompany === index} onOpenChange={(open) => setOpenCompany(open ? index : null)}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={openCompany === index}
-                  className="w-full justify-between"
-                >
-                  {company.name || "Sélectionner une entreprise..."}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
-                <Command>
-                  <CommandInput 
-                    placeholder="Rechercher une entreprise..." 
-                    value={company.name}
-                    onValueChange={(value) => handleInputChange(index, "name", value)}
-                  />
-                  <CommandEmpty>Aucune entreprise trouvée.</CommandEmpty>
-                  <CommandGroup>
-                    {suggestions.companies.map((suggestion) => (
-                      <CommandItem
-                        key={suggestion}
-                        value={suggestion}
-                        onSelect={() => {
-                          handleInputChange(index, "name", suggestion);
-                          setOpenCompany(null);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            company.name === suggestion ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {suggestion}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <CompanySuggestions
+              value={company.name}
+              suggestions={suggestions.companies}
+              open={openCompany === index}
+              onOpenChange={(open) => setOpenCompany(open ? index : null)}
+              onValueChange={(value) => handleInputChange(index, "name", value)}
+              onSelect={(value) => {
+                handleInputChange(index, "name", value);
+                setOpenCompany(null);
+              }}
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor={`company-city-${index}`}>Ville</Label>
-            <Popover open={openCity === index} onOpenChange={(open) => setOpenCity(open ? index : null)}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={openCity === index}
-                  className="w-full justify-between"
-                >
-                  {company.city || "Sélectionner une ville..."}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
-                <Command>
-                  <CommandInput 
-                    placeholder="Rechercher une ville..." 
-                    value={company.city}
-                    onValueChange={(value) => handleInputChange(index, "city", value)}
-                  />
-                  <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
-                  <CommandGroup>
-                    {suggestions.cities.map((suggestion) => (
-                      <CommandItem
-                        key={suggestion}
-                        value={suggestion}
-                        onSelect={() => {
-                          handleInputChange(index, "city", suggestion);
-                          setOpenCity(null);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            company.city === suggestion ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {suggestion}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <CitySuggestions
+              value={company.city}
+              suggestions={suggestions.cities}
+              open={openCity === index}
+              onOpenChange={(open) => setOpenCity(open ? index : null)}
+              onValueChange={(value) => handleInputChange(index, "city", value)}
+              onSelect={(value) => {
+                handleInputChange(index, "city", value);
+                setOpenCity(null);
+              }}
+            />
           </div>
 
           <div className="space-y-2">
