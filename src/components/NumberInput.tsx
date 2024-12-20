@@ -16,7 +16,7 @@ const NumberInput = ({ value, onChange }: NumberInputProps) => {
         id="numberOfCompanies"
         type="number"
         min="1"
-        max="20"
+        max="50"
         value={value || ""}
         onChange={(e) => onChange(parseInt(e.target.value) || 0)}
         className="max-w-xs mx-auto block"
