@@ -7,6 +7,13 @@ interface NumberInputProps {
 }
 
 const NumberInput = ({ value, onChange }: NumberInputProps) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value);
+    if (!isNaN(newValue) && newValue >= 1 && newValue <= 50) {
+      onChange(newValue);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <Label htmlFor="numberOfCompanies">
@@ -18,7 +25,7 @@ const NumberInput = ({ value, onChange }: NumberInputProps) => {
         min="1"
         max="50"
         value={value || ""}
-        onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+        onChange={handleChange}
         className="max-w-xs mx-auto block"
         placeholder="Entrez un nombre..."
       />

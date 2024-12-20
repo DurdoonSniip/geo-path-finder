@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,15 +18,18 @@ const CompanyForm = ({ numberOfCompanies, onSubmit }: CompanyFormProps) => {
     name: string; 
     city: string;
     scheduledTime: string;
-  }>>(
-    Array(numberOfCompanies).fill({ 
+  }>>([]);
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Mettre à jour le tableau des entreprises lorsque numberOfCompanies change
+    setCompanies(Array(numberOfCompanies).fill({ 
       name: "", 
       city: "",
       scheduledTime: "09:00"
-    })
-  );
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+    }));
+  }, [numberOfCompanies]);
 
   const handleInputChange = (
     index: number, 
