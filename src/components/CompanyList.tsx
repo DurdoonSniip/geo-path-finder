@@ -155,7 +155,10 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
         </div>
       </div>
       
-      <div id="company-list" className="space-y-4">
+      <div 
+        id="company-list" 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-max"
+      >
         {companies.map((company, index) => (
           <CompanyCard 
             key={company.id} 
