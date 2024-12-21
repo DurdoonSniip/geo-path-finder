@@ -166,8 +166,6 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
 
   return (
     <div className="space-y-8">
-      <RouteStats companies={companies} />
-
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-2">
           <Button 
@@ -210,6 +208,8 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
           />
         ))}
       </div>
+
+      <RouteStats companies={companies} />
     </div>
   );
 };
