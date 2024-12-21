@@ -18,6 +18,7 @@ const RouteStats = ({ companies }: RouteStatsProps) => {
   );
   
   const completedCompanies = companies.filter(c => c.completed).length;
+  const allCompleted = completedCompanies === companies.length;
   
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -48,13 +49,13 @@ const RouteStats = ({ companies }: RouteStatsProps) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={allCompleted ? "bg-green-100" : ""}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Progression</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <CheckCircle className={`h-4 w-4 ${allCompleted ? "text-green-600" : "text-muted-foreground"}`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className={`text-2xl font-bold ${allCompleted ? "text-green-600" : ""}`}>
               {completedCompanies}/{companies.length}
             </div>
           </CardContent>
