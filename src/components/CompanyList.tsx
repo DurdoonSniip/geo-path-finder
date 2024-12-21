@@ -1,7 +1,7 @@
 import { Company } from "@/types/company";
 import CompanyCard from "./CompanyCard";
 import { Button } from "@/components/ui/button";
-import { Trash2, FileText } from "lucide-react";
+import { Trash2, FileText, Share2 } from "lucide-react";
 import { clearCompanies, saveCompanies, updateCompanyCompletion } from "@/utils/storage";
 import { useToast } from "@/components/ui/use-toast";
 import jsPDF from "jspdf";
@@ -24,6 +24,38 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
   const handleCompletionToggle = (companyId: string, completed: boolean) => {
     const updatedCompanies = updateCompanyCompletion(companies, companyId, completed);
     onUpdateCompanies(updatedCompanies);
+  };
+
+  const handleShare = async () => {
+    // Créer un objet avec les données à partager
+    const shareData = {
+      companies: companies.map(company => ({
+        name: company.name,
+        city: company.city,
+        scheduledTime: company.scheduledTime,
+        completed: company.completed
+      }))
+    };
+
+    // Convertir en string et encoder en base64
+    const encodedData = btoa(JSON.stringify(shareData));
+    
+    // Créer l'URL complète
+    const shareUrl = `${window.location.origin}?data=${encodedData}`;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Lien copié !",
+        description: "Le lien de partage a été copié dans votre presse-papiers.",
+      });
+    } catch (err) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de copier le lien. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getWazeUrl = (lat: number, lon: number) => {
@@ -143,6 +175,14 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
           >
             <FileText className="w-4 h-4" />
             Générer un PDF
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleShare}
+            className="gap-2"
+          >
+            <Share2 className="w-4 h-4" />
+            Partager
           </Button>
           <Button 
             variant="destructive" 
