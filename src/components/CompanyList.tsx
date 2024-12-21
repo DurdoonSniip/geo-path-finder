@@ -5,7 +5,7 @@ import { Trash2, FileText, Share2 } from "lucide-react";
 import { clearCompanies, saveCompanies, updateCompanyCompletion } from "@/utils/storage";
 import { useToast } from "@/components/ui/use-toast";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import RouteStats from "./RouteStats";
 
 interface CompanyListProps {
   companies: Company[];
@@ -165,7 +165,7 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-2">
           <Button 
@@ -194,6 +194,8 @@ const CompanyList = ({ companies, onClear, onUpdateCompanies }: CompanyListProps
           </Button>
         </div>
       </div>
+
+      <RouteStats companies={companies} />
       
       <div 
         id="company-list" 
